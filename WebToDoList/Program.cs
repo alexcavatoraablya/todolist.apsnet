@@ -67,6 +67,47 @@ using(var scope = app.Services.CreateScope())
                 Console.WriteLine($"!!!Помилка при створені ролі {name}!!!");
         }
     }
+
+    // Отримуємо UserManager з DI-контейнера (наприклад, поруч із roleManager)
+    if (!userManager.Users.Any())
+    {
+        var adminUser = new UserEntity
+        {
+            UserName = "admin@gmail.com",
+            Email = "admin@gmail.com",
+            EmailConfirmed = true // Одразу підтверджуємо пошту, щоб не було проблем зі входом
+        };
+
+        var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine($"--Користувача {adminUser.Email} успішно створено з роллю Admin--");
+        }
+        else
+        {
+            Console.WriteLine($"!!!Помилка створення користувача {adminUser.Email}!!!");
+        }
+
+        var regularUser = new UserEntity
+        {
+            UserName = "user@gmail.com",
+            Email = "user@gmail.com",
+            EmailConfirmed = true
+        };
+
+        var userResult = await userManager.CreateAsync(regularUser, "User123!");
+        if (userResult.Succeeded)
+        {
+            await userManager.AddToRoleAsync(regularUser, "User");
+            Console.WriteLine($"--Користувача {regularUser.Email} успішно створено з роллю User--");
+        }
+        else
+        {
+            Console.WriteLine($"!!!Помилка створення користувача {regularUser.Email}!!!");
+        }
+    }
+
 }
 
 
